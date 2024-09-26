@@ -1,0 +1,30 @@
+pipeline {
+    parameters {
+        booleanParam(name: 'autoApprove', defaultValue: false, description: 'Automatically run apply after generating plan?')
+    } 
+   
+
+    agent any
+   
+    
+    stages {
+        stage('SCM') {
+            steps {
+                git changelog: false, poll: false, url: 'https://github.com/kingofdarknesss/docker-spring-boot-java-web-service-example.git'
+            }
+        }
+       
+    
+        stage('Docker Build and Push') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'dockerhub2') {
+                        sh 'cd /app'
+                        sh 'docker build -t devopsike123/nodejsapp:latest .'
+                        sh 'docker push devopsike123/nodejsapp:latest '
+                    }
+                }
+            }
+        }
+    }
+}
